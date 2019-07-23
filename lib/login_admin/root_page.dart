@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recipes_app/auth/auth.dart';
+import 'package:recipes_app/login_admin/menu_page.dart';
+import 'package:recipes_app/login_admin/slider_page.dart';
 
 //Para saber si el usuario se logeo o requiere un registro
 class RootPage extends StatefulWidget {
@@ -46,16 +48,16 @@ class _RootPageState extends State<RootPage> {
     //Si esta logeado lo lleva a la app HomePage sino lo lleva a login mas registro
     switch (_authStatus) {
       case AuthStatus.notSignIn:
-        // return IntroScreen(
-        //   auth: widget.auth,
-        //   onSignIn: _signIn,
-        // );
+        return IntroScreen(
+          auth: widget.auth,
+          onSignIn: _signIn,
+        );
         break;
       case AuthStatus.signIn:
-      // return HomePage(
-      //   auth:widget.auth,
-      //   onSignedOut: _signOut,
-      // );
+      return HomePage(
+        auth:widget.auth,
+        onSignedOut: _signOut,
+      );
       break;
     }
     return _widget;

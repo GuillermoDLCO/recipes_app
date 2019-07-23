@@ -1,3 +1,4 @@
+import 'package:recipes_app/pages/admin/show_recipe.dart';
 import 'package:recipes_app/widgets/home_page.dart';
 
 abstract class Content {
@@ -6,7 +7,7 @@ abstract class Content {
   // Future<InicioPage> recipes(String id);
   // Future<MapsPage> map();
   // Future<ListMyRecipe> myRecipe(String id);
-  // Future<InicioPage> admin();
+  Future<ShowRecipe> admin();
 }
 
 class ContentPage implements Content {
@@ -32,9 +33,9 @@ class ContentPage implements Content {
   //   return ListMyRecipe(id: id,);
   // }
 
-  // @override
-  // Future<InicioPage> admin() async{
-  //   return InicioPage();
-  // }
+  @override
+  Future<ShowRecipe> admin() async{
+    return ShowRecipe();
+  }
   
 }

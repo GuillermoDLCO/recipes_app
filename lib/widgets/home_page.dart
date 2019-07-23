@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:recipes_app/auth/auth.dart';
 
+import 'food_body.dart';
+import 'food_top.dart';
+
 
 class HomePageRecipes extends StatefulWidget {
   @override
@@ -42,7 +45,7 @@ class _HomePageRecipesState extends State<HomePageRecipes> {
           ),
           Align(
             alignment: Alignment.topCenter,
-            // child: FoodTop(),
+            child: FoodTop(),
           ),
           Align(
             alignment: Alignment.topCenter,
@@ -57,7 +60,7 @@ class _HomePageRecipesState extends State<HomePageRecipes> {
             ),
           ),
           Expanded(
-            // child: FoodBody(),
+            child: FoodBody(),
           ),          
         ],
       ),
