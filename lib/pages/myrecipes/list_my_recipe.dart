@@ -3,31 +3,38 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/auth/auth.dart';
 import 'package:recipes_app/model/recipe_model.dart';
-import 'package:recipes_app/pages/admin/add_recipe.dart';
-import 'package:recipes_app/pages/admin/edit_recipe.dart';
-import 'package:recipes_app/pages/admin/view_recipe.dart';
+import 'package:recipes_app/pages/myrecipes/add_my_recipe.dart';
+import 'package:recipes_app/pages/myrecipes/edit_my_recipe.dart';
+import 'package:recipes_app/pages/myrecipes/view_my_recipe.dart';
+
 
 class CommonThings {
   static Size size;
 }
 
+TextEditingController phoneInputController;
 TextEditingController nameInputController;
 String id;
 final db = Firestore.instance;
 String name;
 
-class ShowRecipe extends StatefulWidget {
+
+class ListMyRecipe extends StatefulWidget {
+
   final String id;
-  ShowRecipe({this.auth, this.onSignedOut, this.id});
+
+  ListMyRecipe({this.auth, this.onSignedOut, this.id});
   final BaseAuth auth;
   final VoidCallback onSignedOut;
 
   @override
-  _ShowRecipeState createState() => _ShowRecipeState();
+  _ListMyRecipeState createState() => _ListMyRecipeState();
 }
 
-class _ShowRecipeState extends State<ShowRecipe> {
-  String userID;
+class _ListMyRecipeState extends State<ListMyRecipe> {
+
+
+   String userID;
   //Widget content;
 
   @override
@@ -37,18 +44,18 @@ class _ShowRecipeState extends State<ShowRecipe> {
     setState(() {
       Auth().currentUser().then((onValue) {
         userID = onValue;
-        print('user id $userID');
+        print('el futuro Cheft $userID');
       });
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
-    CommonThings.size = MediaQuery.of(context).size;
-    //print('Width of the screen: ${CommonThings.size.width}');
-    return new Scaffold(
+     CommonThings.size = MediaQuery.of(context).size;
+    return new Scaffold(      
       body: StreamBuilder(
-        stream: Firestore.instance.collection("colrecipes").snapshots(),
+        stream: Firestore.instance.collection('usuarios').document(widget.id).collection('mycolrecipes').snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return Text("loading....");
@@ -67,7 +74,7 @@ class _ShowRecipeState extends State<ShowRecipe> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '\nAgrega un recipe.\n',
+                            '\nAdd my recipe.\n',
                             style: TextStyle(fontSize: 24, color: Colors.blue),
                           )
                         ],
@@ -94,8 +101,7 @@ class _ShowRecipeState extends State<ShowRecipe> {
                               fit: BoxFit.cover,
                               width: 100,
                               height: 100,
-                              placeholder:
-                                  AssetImage('assets/images/azucar.gif'),
+                              placeholder: AssetImage('assets/images/azucar.gif'),
                               image: NetworkImage(document["image"]),
                             ),
                           ),
@@ -121,13 +127,13 @@ class _ShowRecipeState extends State<ShowRecipe> {
                                 image: document['image'].toString(),
                                 recipe: document['recipe'].toString(),
                               );
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EditRecipe(
-                                            recipe: recipe,
-                                            idRecipe: document.documentID,
-                                            uid: userID)));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EditMyRecipe(
+                                          recipe: recipe,
+                                          idRecipe: document.documentID,
+                                          uid: userID)));
                             },
                           ),
                         ),
@@ -137,21 +143,23 @@ class _ShowRecipeState extends State<ShowRecipe> {
                             color: Colors.redAccent,
                           ),
                           onPressed: () {
+                            //eliminamos la receta personal
                             document.data.remove('key');
                             Firestore.instance
-                                .collection('colrecipes')
+                                .collection('usuarios/$userID/mycolrecipes')
                                 .document(document.documentID)
                                 .delete();
+                                //eliminamos la foto
                             FirebaseStorage.instance
                                 .ref()
                                 .child(
-                                    'colrecipes/$userID/uid/recipe/${document['name'].toString()}.jpg')
+                                    'usuarios/$userID/mycolrecipes/${document['name'].toString()}.jpg')
                                 .delete()
                                 .then((onValue) {
                               print('foto eliminada');
                             });
                           }, //funciona
-                        ),
+                        ),                        
                         IconButton(
                           icon: Icon(
                             Icons.remove_red_eye,
@@ -159,18 +167,18 @@ class _ShowRecipeState extends State<ShowRecipe> {
                           ),
                           //Visualizar la receta,
                           onPressed: () {
-                            Recipe recipe = Recipe(
+                            Recipe myrecipe = Recipe(
                               name: document['name'].toString(),
                               image: document['image'].toString(),
                               recipe: document['recipe'].toString(),
                             );
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ViewRecipe(
-                                          recipe: recipe,
-                                          idRecipe: document.documentID,
-                                          uid: userID)));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ViewMyRecipe(
+                                        recipe: myrecipe,
+                                        idRecipe: document.documentID,
+                                        uid: userID)));
                           },
                         ),
                       ],
@@ -189,7 +197,7 @@ class _ShowRecipeState extends State<ShowRecipe> {
         ),
         backgroundColor: Colors.pinkAccent,
         onPressed: () {
-          Route route = MaterialPageRoute(builder: (context) => MyAddPage());
+          Route route = MaterialPageRoute(builder: (context) => MyAddRecipe());
           Navigator.push(context, route);
         },
       ),
